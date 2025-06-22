@@ -21,12 +21,12 @@ function OAuth() {
         body: JSON.stringify({
           name: result.user.displayName,
           email: result.user.email,
-          photoURL: result.user.photoURL,
+          photo: result.user.photoURL, // changed from photoURL to photo
         }),
       });
       const data = await res.json();
       dispatch(signInSuccess(data));
-        navigate("/");
+      navigate("/");
     } catch (error) {
       console.log("could not sign in with google", error);
     }
