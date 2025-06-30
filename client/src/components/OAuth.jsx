@@ -13,18 +13,31 @@ function OAuth() {
       const auth = getAuth(app);
 
       const result = await signInWithPopup(auth, provider);
+
+      // Try different formats for the photo URL to maximize compatibility
+      let photoURL = result.user.photoURL;
+      console.log("Original Google photoURL:", photoURL);
+
+      if (photoURL) {
+        // Remove any size parameters and add a more compatible format
+        photoURL = photoURL.split("=")[0] + "=s200-c";
+        console.log("Modified photoURL:", photoURL);
+      }
+
       const res = await fetch("/api/auth/google", {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
         },
+        credentials: "include", // Include cookies
         body: JSON.stringify({
           name: result.user.displayName,
           email: result.user.email,
-          photo: result.user.photoURL, // changed from photoURL to photo
+          photo: photoURL,
         }),
       });
       const data = await res.json();
+      console.log("Google auth response:", data);
       dispatch(signInSuccess(data));
       navigate("/");
     } catch (error) {

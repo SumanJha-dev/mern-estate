@@ -1,6 +1,7 @@
 import { FaSearch } from "react-icons/fa";
 import { Link } from "react-router-dom";
 import { useSelector } from "react-redux";
+import Avatar from "./Avatar";
 
 function Header() {
   const { currentUser } = useSelector((state) => state.user);
@@ -34,20 +35,10 @@ function Header() {
           </Link>
           <Link to="/profile">
             {currentUser ? (
-              <img
-                key={currentUser.avatar}
+              <Avatar
+                src={currentUser.avatar}
+                alt={currentUser.username || "Profile"}
                 className="rounded-full h-7 w-7 object-cover border border-gray-300"
-                src={
-                  currentUser.avatar ||
-                  "https://i.pinimg.com/736x/25/19/9d/25199d7fd3c53127dde6ad8806f44773.jpg"
-                }
-                alt="profile"
-                onError={(e) => {
-                  console.error("Avatar failed to load:", currentUser.avatar);
-                  e.target.onerror = null;
-                  e.target.src =
-                    "https://i.pinimg.com/736x/25/19/9d/25199d7fd3c53127dde6ad8806f44773.jpg";
-                }}
               />
             ) : (
               <li className=" text-slate-700 hover:underline">Sign in</li>
