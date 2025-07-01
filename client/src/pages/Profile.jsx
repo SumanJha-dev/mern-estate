@@ -20,7 +20,7 @@ import {
 } from "../redux/user/userSlice";
 import { useDispatch } from "react-redux";
 import Avatar from "../components/Avatar";
-import { data } from "react-router-dom";
+
 
 function Profile() {
   const fileRef = useRef(null);
