@@ -19,8 +19,8 @@ import {
   signOutUserSuccess,
 } from "../redux/user/userSlice";
 import { useDispatch } from "react-redux";
+import { Link } from "react-router-dom";
 import Avatar from "../components/Avatar";
-
 
 function Profile() {
   const fileRef = useRef(null);
@@ -97,7 +97,7 @@ function Profile() {
   };
 
   const handleDeleteUser = async () => {
-    try{
+    try {
       dispatch(deleteUserStart());
       const res = await fetch(`/api/user/delete/${currentUser._id}`, {
         method: "DELETE",
@@ -108,22 +108,22 @@ function Profile() {
         return;
       }
       dispatch(deleteUserSuccess(data));
-    }catch(error){
+    } catch (error) {
       dispatch(deleteUserFailure(error.message));
     }
   };
 
   const handleSignOut = async () => {
-    try{
-      dispatch(signOutUserStart())
+    try {
+      dispatch(signOutUserStart());
       const res = await fetch("/api/auth/signout");
       const data = await res.json();
-      if(data.success === false){
+      if (data.success === false) {
         dispatch(signOutUserFailure(data.message));
         return;
       }
       dispatch(signOutUserSuccess(data));
-    }catch(error){
+    } catch (error) {
       dispatch(signOutUserFailure(error.message));
     }
   };
@@ -185,10 +185,23 @@ function Profile() {
         >
           {loading ? "Loading..." : "Update"}
         </button>
+        <Link
+          className="bg-green-700 text-white p-3 rounded-lg uppercase text-center hover:opacity-95"
+          to={"/create-listing"}
+        >
+          Create Listing
+        </Link>
       </form>
       <div className="flex justify-between mt-5 ">
-        <span onClick={handleDeleteUser} className="text-red-700 cursor-pointer">Delete Account</span>
-        <span onClick={handleSignOut} className="text-red-700 cursor-pointer">Sign Out</span>
+        <span
+          onClick={handleDeleteUser}
+          className="text-red-700 cursor-pointer"
+        >
+          Delete Account
+        </span>
+        <span onClick={handleSignOut} className="text-red-700 cursor-pointer">
+          Sign Out
+        </span>
       </div>
       <p className="text-red-700 mt-5">{error ? error : ""}</p>
       <p className="text-green-700 mt-5">
