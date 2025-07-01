@@ -1,7 +1,7 @@
 import bcrypt from "bcryptjs";
 import User from "../models/user.modal.js";
 import { errorHandler } from "../utils/error.js";
-import Listing from '../models/listing.model.js';
+import Listing from "../models/listing.model.js";
 
 export const test = (req, res) => {
   res.json({
@@ -54,14 +54,68 @@ export const deleteUser = async (req, res, next) => {
 };
 
 export const getUserListings = async (req, res, next) => {
+  console.log("getUserListings called with userId:", req.params.id);
+  console.log("Request user ID:", req.user.id);
   if (req.user.id === req.params.id) {
     try {
+      console.log("Fetching listings for user:", req.params.id);
       const listings = await Listing.find({ userRef: req.params.id });
+      console.log("Found listings:", listings.length);
+      console.log("Listings data:", JSON.stringify(listings, null, 2));
+
+      // Let's also check if there are any listings in the database at all
+      const allListings = await Listing.find({});
+      console.log("Total listings in database:", allListings.length);
+      console.log(
+        "All listings userRefs:",
+        allListings.map((l) => l.userRef)
+      );
+
       res.status(200).json(listings);
     } catch (error) {
+      console.error("Error fetching listings:", error);
       next(error);
     }
   } else {
-    return next(errorHandler(401, 'You can only view your own listings!'));
+    console.log("Unauthorized access attempt");
+    return next(errorHandler(401, "You can only view your own listings!"));
   }
-}; 
+};
+
+// Debug function to check userRef format
+export const debugUserListings = async (req, res, next) => {
+  try {
+    const userId = req.params.id;
+    console.log("Debug - Looking for userRef:", userId, typeof userId);
+
+    // Try different query methods
+    const listingsString = await Listing.find({ userRef: userId });
+    const listingsRegex = await Listing.find({
+      userRef: { $regex: new RegExp(userId, "i") },
+    });
+
+    // Get all listings to see the actual userRef format
+    const allListings = await Listing.find({});
+
+    console.log("Listings with exact string match:", listingsString.length);
+    console.log("Listings with regex match:", listingsRegex.length);
+    console.log(
+      "All userRefs in database:",
+      allListings.map((l) => ({ userRef: l.userRef, type: typeof l.userRef }))
+    );
+
+    res.status(200).json({
+      userId,
+      userIdType: typeof userId,
+      exactMatches: listingsString.length,
+      regexMatches: listingsRegex.length,
+      allUserRefs: allListings.map((l) => ({
+        userRef: l.userRef,
+        type: typeof l.userRef,
+      })),
+    });
+  } catch (error) {
+    console.error("Debug error:", error);
+    next(error);
+  }
+};

@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import { useState, useEffect } from "react";
 
 const Avatar = ({ src, alt, className, onClick }) => {
   const [currentSrc, setCurrentSrc] = useState(src);
@@ -55,7 +55,7 @@ const Avatar = ({ src, alt, className, onClick }) => {
   };
 
   // If the original src changes, reset the error state
-  React.useEffect(() => {
+  useEffect(() => {
     if (src && src !== currentSrc) {
       setCurrentSrc(src);
       setFallbackIndex(0);
